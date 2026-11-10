@@ -1,0 +1,1645 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Comparador Electoral Inteligente • Test y Resultados Fase 6</title>
+  <style>
+    :root {
+      --bg: #090d16;
+      --card-bg: #131b2e;
+      --card-border: #1e293b;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #3b82f6;
+      --primary-hover: #2563eb;
+      --accent: #06b6d4;
+      --agree: #10b981;
+      --agree-hover: #059669;
+      --disagree: #f43f5e;
+      --disagree-hover: #e11d48;
+      --neutral: #64748b;
+      --neutral-hover: #475569;
+      --psoe-color: #ef4444;
+      --pp-color: #0284c7;
+      --vox-color: #84cc16;
+      --progress-bg: #1e293b;
+      --badge-bg: rgba(59, 130, 246, 0.12);
+      --badge-text: #60a5fa;
+    }
+
+    [data-theme="light"] {
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --card-border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --accent: #0284c7;
+      --agree: #059669;
+      --agree-hover: #047857;
+      --disagree: #e11d48;
+      --disagree-hover: #be123c;
+      --neutral: #64748b;
+      --neutral-hover: #475569;
+      --psoe-color: #dc2626;
+      --pp-color: #0284c7;
+      --vox-color: #65a30d;
+      --progress-bg: #e2e8f0;
+      --badge-bg: #eff6ff;
+      --badge-text: #1d4ed8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      padding: 1rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--card-border);
+      background: var(--card-bg);
+      position: sticky;
+      top: 0;
+      z-index: 40;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-weight: 700;
+      font-size: 1.05rem;
+    }
+
+    .brand-logo {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.85rem;
+    }
+
+    .header-btns {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .btn-sm {
+      background: transparent;
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      padding: 0.45rem 0.75rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .btn-sm:hover { background: var(--progress-bg); }
+
+    main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 820px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 2.25rem 2rem;
+      box-shadow: 0 12px 30px -10px rgba(0,0,0,0.3);
+    }
+
+    .hero-badge {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.25rem 0.65rem;
+      border-radius: 9999px;
+      background: var(--badge-bg);
+      color: var(--badge-text);
+      margin-bottom: 0.85rem;
+    }
+
+    .hero-title {
+      font-size: 2.2rem;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 1rem;
+      letter-spacing: -0.02em;
+    }
+
+    .hero-subtitle {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      line-height: 1.6;
+      margin-bottom: 2rem;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .feat-card {
+      padding: 1rem;
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.02);
+    }
+    .feat-card h4 { font-size: 0.85rem; margin-bottom: 0.3rem; color: var(--primary); }
+    .feat-card p { font-size: 0.75rem; color: var(--text-muted); line-height: 1.4; }
+
+    .btn-primary {
+      width: 100%;
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 1rem 1.5rem;
+      border-radius: 12px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+    }
+    .btn-primary:hover { background: var(--primary-hover); }
+
+    .top-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .cat-tag {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+      background: var(--badge-bg);
+      color: var(--badge-text);
+    }
+
+    .counter-tag {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .progress-bar-wrap {
+      width: 100%;
+      height: 6px;
+      background: var(--progress-bg);
+      border-radius: 9999px;
+      margin-bottom: 2rem;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .statement-box {
+      min-height: 130px;
+      display: flex;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
+    .statement-text {
+      font-size: 1.35rem;
+      line-height: 1.5;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    .answers-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    @media (min-width: 640px) {
+      .answers-grid {
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+    }
+
+    .ans-btn {
+      padding: 1.25rem 1rem;
+      border-radius: 14px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.3rem;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      transition: transform 0.1s, background-color 0.2s;
+    }
+    .ans-btn:active { transform: scale(0.98); }
+
+    .ans-btn.agree { background: var(--agree); color: white; }
+    .ans-btn.agree:hover { background: var(--agree-hover); }
+
+    .ans-btn.disagree { background: var(--disagree); color: white; }
+    .ans-btn.disagree:hover { background: var(--disagree-hover); }
+
+    .ans-btn.neutral { background: var(--neutral); color: white; }
+    .ans-btn.neutral:hover { background: var(--neutral-hover); }
+
+    .sub-key { font-size: 0.7rem; opacity: 0.8; font-weight: normal; }
+
+    .didactic-box {
+      border: 1px solid rgba(6, 182, 212, 0.3);
+      background: rgba(6, 182, 212, 0.08);
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+      margin-top: 1.25rem;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      display: none;
+    }
+    .didactic-box.open { display: block; }
+    .didactic-title { font-weight: 700; color: var(--accent); margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.4rem; }
+
+    .bottom-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--card-border);
+    }
+
+    .results-hero {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .results-title {
+      font-size: 2.2rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.02em;
+    }
+
+    .results-subtitle {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .parties-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .party-card {
+      border-radius: 16px;
+      border: 1px solid var(--card-border);
+      padding: 1.5rem;
+      background: rgba(255,255,255,0.02);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .party-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+    }
+    .party-card.psoe::before { background: var(--psoe-color); }
+    .party-card.vox::before { background: var(--vox-color); }
+    .party-card.pp::before { background: var(--pp-color); }
+
+    .party-name {
+      font-size: 1.25rem;
+      font-weight: 800;
+      margin-bottom: 0.25rem;
+    }
+
+    .party-doc {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-bottom: 1.25rem;
+    }
+
+    .affinity-circle {
+      font-size: 2.8rem;
+      font-weight: 900;
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+    .party-card.psoe .affinity-circle { color: var(--psoe-color); }
+    .party-card.vox .affinity-circle { color: var(--vox-color); }
+    .party-card.pp .affinity-circle { color: var(--pp-color); }
+
+    .affinity-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+
+    .party-stats {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--card-border);
+      display: flex;
+      justify-content: space-around;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .section-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .thematic-bars {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .thematic-row {
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 0.85rem 1rem;
+      background: rgba(255,255,255,0.01);
+    }
+
+    .thematic-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .thematic-bars-container {
+      display: flex;
+      gap: 0.5rem;
+      height: 8px;
+    }
+
+    .thematic-bar {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.5s ease;
+    }
+
+    .table-controls {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      padding: 0.4rem 0.8rem;
+      border-radius: 8px;
+      border: 1px solid var(--card-border);
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .filter-btn.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .table-wrap {
+      max-height: 480px;
+      overflow-y: auto;
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      margin-bottom: 2rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+      text-align: left;
+    }
+
+    th {
+      background: #0f172a;
+      color: #94a3b8;
+      padding: 0.75rem 1rem;
+      position: sticky;
+      top: 0;
+      font-weight: 700;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    td {
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid var(--card-border);
+      vertical-align: top;
+      line-height: 1.4;
+    }
+
+    tr:hover { background: rgba(255,255,255,0.02); }
+
+    .vote-pill {
+      display: inline-block;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-weight: 700;
+      font-size: 0.7rem;
+    }
+    .vote-pill.agree { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+    .vote-pill.disagree { background: rgba(244, 63, 94, 0.15); color: #f43f5e; }
+    .vote-pill.neutral { background: rgba(100, 116, 139, 0.15); color: #94a3b8; }
+
+    .party-pos-badge {
+      font-weight: 700;
+      font-size: 0.75rem;
+    }
+    .party-pos-badge.favor { color: #10b981; }
+    .party-pos-badge.contra { color: #f43f5e; }
+    .party-pos-badge.matiz { color: #f59e0b; }
+
+    .profile-card {
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      background: rgba(59, 130, 246, 0.04);
+      margin-bottom: 2rem;
+      line-height: 1.6;
+      font-size: 0.9rem;
+    }
+
+    @media print {
+      header, .btn-sm, .bottom-bar, .filter-btn { display: none !important; }
+      body { background: white !important; color: black !important; }
+      .card { border: none !important; box-shadow: none !important; padding: 0 !important; }
+    }
+  </style>
+</head>
+<body data-theme="dark">
+
+  <header>
+    <div class="brand">
+      <div class="brand-logo">CE</div>
+      <span>Comparador Electoral</span>
+    </div>
+    <div class="header-btns">
+      <button class="btn-sm" id="themeBtn" title="Cambiar tema">
+        <span id="themeIcon">☀️</span> Modo Claro
+      </button>
+      <button class="btn-sm" id="printBtn" title="Imprimir informe">
+        🖨️ Imprimir
+      </button>
+      <button class="btn-sm" id="exportBtn" title="Exportar respuestas">
+        💾 Exportar
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+      
+      <!-- PANTALLA 1: BIENVENIDA -->
+      <div class="card" id="welcomeScreen">
+        <span class="hero-badge">Análisis Electoral Neutral</span>
+        <h1 class="hero-title">Comparador Electoral Inteligente</h1>
+        <p class="hero-subtitle">
+          Descubra de forma rigurosa y sin sesgos con qué partido político coincide realmente su opinión. Evalúe 60 propuestas extraídas íntegramente de los programas oficiales de <strong>PSOE</strong>, <strong>VOX</strong> y <strong>Partido Popular</strong> y obtenga un informe comparativo completo al finalizar.
+        </p>
+
+        <div class="features-grid">
+          <div class="feat-card">
+            <h4>1. Medidas Reales</h4>
+            <p>Preguntas sobre leyes, cifras y medidas concretas de los programas oficiales.</p>
+          </div>
+          <div class="feat-card">
+            <h4>2. Tres Respuestas</h4>
+            <p>DE ACUERDO, EN DESACUERDO o DESCONOZCO. Sin escalas intermedias.</p>
+          </div>
+          <div class="feat-card">
+            <h4>3. Anonimato Durante el Test</h4>
+            <p>No sabrá qué partido propone cada medida hasta finalizar el cuestionario.</p>
+          </div>
+          <div class="feat-card">
+            <h4>4. Fase 6 Inmediata</h4>
+            <p>Al completar el test, accederá al informe de afinidad y tabla comparativa detallada.</p>
+          </div>
+        </div>
+
+        <button class="btn-primary" id="startBtn">
+          <span>Comenzar el Cuestionario</span>
+          <span>→</span>
+        </button>
+      </div>
+
+      <!-- PANTALLA 2: PREGUNTAS (UNA A UNA) -->
+      <div class="card" id="questionScreen" style="display: none;">
+        <div class="top-meta">
+          <span class="cat-tag" id="qCategory">Materia</span>
+          <span class="counter-tag" id="qCounter">Pregunta 1 de 60</span>
+        </div>
+
+        <div class="progress-bar-wrap">
+          <div class="progress-fill" id="qProgress"></div>
+        </div>
+
+        <div class="statement-box">
+          <div class="statement-text" id="qText">Cargando propuesta...</div>
+        </div>
+
+        <div class="answers-grid">
+          <button class="ans-btn agree" id="btnAgree">
+            <span>DE ACUERDO</span>
+            <span class="sub-key">[Tecla 1]</span>
+          </button>
+          <button class="ans-btn disagree" id="btnDisagree">
+            <span>EN DESACUERDO</span>
+            <span class="sub-key">[Tecla 2]</span>
+          </button>
+          <button class="ans-btn neutral" id="btnNeutral">
+            <span>DESCONOZCO</span>
+            <span class="sub-key">[Tecla 3]</span>
+          </button>
+        </div>
+
+        <!-- EXPLICACIÓN DIDÁCTICA -->
+        <div class="didactic-box" id="didacticBox">
+          <div class="didactic-title">ℹ️ Concepto Informativo Neutral:</div>
+          <div id="didacticText"></div>
+        </div>
+
+        <div class="bottom-bar">
+          <button class="btn-sm" id="prevBtn" disabled>← Anterior</button>
+          <button class="btn-sm" id="restartBtn">Reiniciar</button>
+        </div>
+      </div>
+
+      <!-- PANTALLA 3: FASE 6 - INFORME COMPARATIVO COMPLETO -->
+      <div class="card" id="resultsScreen" style="display: none;">
+        <div class="results-hero">
+          <span class="hero-badge" style="background: rgba(16, 185, 129, 0.15); color: #10b981;">Fase 6 • Resultados Oficiales</span>
+          <h2 class="results-title">Informe de Afinidad y Comparación Política</h2>
+          <p class="results-subtitle">
+            Basado en las respuestas emitidas y contrastado con las 1.951 propuestas oficiales de los programas electorales.
+          </p>
+        </div>
+
+        <!-- TARJETAS DE AFINIDAD DE LOS 3 PARTIDOS -->
+        <div class="parties-grid">
+          <div class="party-card psoe">
+            <div class="party-name" style="color: var(--psoe-color);">PSOE</div>
+            <div class="party-doc">Programa 23J (272 págs.)</div>
+            <div class="affinity-circle" id="psoeScore">0%</div>
+            <div class="affinity-label">Coincidencia Programática</div>
+            <div class="party-stats">
+              <span>Coincidencias: <strong id="psoeMatches">0</strong></span>
+              <span>Divergencias: <strong id="psoeDiffs">0</strong></span>
+            </div>
+          </div>
+
+          <div class="party-card pp">
+            <div class="party-name" style="color: var(--pp-color);">PARTIDO POPULAR</div>
+            <div class="party-doc">Reconstrucción Nacional (82 págs.)</div>
+            <div class="affinity-circle" id="ppScore">0%</div>
+            <div class="affinity-label">Coincidencia Programática</div>
+            <div class="party-stats">
+              <span>Coincidencias: <strong id="ppMatches">0</strong></span>
+              <span>Divergencias: <strong id="ppDiffs">0</strong></span>
+            </div>
+          </div>
+
+          <div class="party-card vox">
+            <div class="party-name" style="color: var(--vox-color);">VOX</div>
+            <div class="party-doc">Programa CyL 2026 (172 págs.)</div>
+            <div class="affinity-circle" id="voxScore">0%</div>
+            <div class="affinity-label">Coincidencia Programática</div>
+            <div class="party-stats">
+              <span>Coincidencias: <strong id="voxMatches">0</strong></span>
+              <span>Divergencias: <strong id="voxDiffs">0</strong></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- PERFIL DESCRIPTIVO -->
+        <div class="section-title">📊 Perfil Descriptivo de tus Respuestas</div>
+        <div class="profile-card" id="profileSummary">
+          Calculando análisis de tendencias...
+        </div>
+
+        <!-- AFINIDAD POR MATERIAS -->
+        <div class="section-title">🧭 Afinidad por Bloques Temáticos</div>
+        <div class="thematic-bars" id="thematicBarsContainer">
+          <!-- Generado dinámicamente -->
+        </div>
+
+        <!-- TABLA COMPARATIVA PROPUESTA POR PROPUESTA -->
+        <div class="section-title">🔍 Desglose Comparativo Propuesta a Propuesta</div>
+        <div class="table-controls">
+          <button class="filter-btn active" data-filter="all">Todas las Medidas (60)</button>
+          <button class="filter-btn" data-filter="agree">Tus Acuerdos</button>
+          <button class="filter-btn" data-filter="disagree">Tus Desacuerdos</button>
+          <button class="filter-btn" data-filter="neutral">Tus Desconozco</button>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 28%;">Medida Planteada</th>
+                <th style="width: 14%;">Tu Respuesta</th>
+                <th style="width: 19%;">Posición PSOE</th>
+                <th style="width: 19%;">Posición PP</th>
+                <th style="width: 19%;">Posición VOX</th>
+              </tr>
+            </thead>
+            <tbody id="comparisonTableBody">
+              <!-- Filas dinámicas -->
+            </tbody>
+          </table>
+        </div>
+
+        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+          <button class="btn-primary" id="downloadResultsBtn" style="width: auto; padding: 0.85rem 1.5rem; background: var(--agree);">
+            <span>💾 Descargar 06_MIS_RESULTADOS_ELECTORALES.json</span>
+          </button>
+          <button class="btn-sm" id="retakeBtn" style="padding: 0.85rem 1.5rem;">
+            <span>🔄 Repetir el Cuestionario</span>
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    // BANCO COMPLETO CON CLAVES DE AFINIDAD DOCUMENTAL
+    const QUESTIONS = [
+  {
+    "id": "PREG-001",
+    "materia": "Impuestos",
+    "subtema": "Deflactación IRPF",
+    "enunciado": "Se deben ajustar automáticamente los tramos del IRPF (deflactación) cuando sube la inflación para las rentas medias y bajas (hasta 40.000 € anuales) para evitar que los trabajadores paguen más impuestos por el encarecimiento de la vida.",
+    "psoePos": "En contra", "psoeRef": "PSOE-0056 (Pág. 34)",
+    "voxPos": "A favor", "voxRef": "VOX-214 (Pág. 90)",
+    "ppPos": "A favor", "ppRef": "PP-180 (Pág. 63)",
+    "didactica": "Deflactar el IRPF significa aumentar los límites de renta de cada tramo impositivo al mismo ritmo que suben los precios (inflación). Si una persona recibe un aumento de sueldo solo para compensar el IPC, sin deflactación podría saltar a un tramo superior y pagar más porcentaje de impuestos aunque su poder adquisitivo no haya crecido."
+  },
+  {
+    "id": "PREG-002",
+    "materia": "Impuestos",
+    "subtema": "Sucesiones y Donaciones",
+    "enunciado": "El Impuesto sobre Sucesiones y Donaciones debe eliminarse o bonificarse al 99% para las herencias directas entre padres, hijos y cónyuges en toda España.",
+    "psoePos": "En contra", "psoeRef": "PSOE-0062 (Pág. 35)",
+    "voxPos": "A favor", "voxRef": "VOX-216 (Pág. 91)",
+    "ppPos": "A favor", "ppRef": "PP-183 (Pág. 63)",
+    "didactica": "El Impuesto sobre Sucesiones grava los bienes y derechos recibidos por herencia. Actualmente está cedido a las Comunidades Autónomas, por lo que en algunas regiones está prácticamente exento (bonificado al 99%) y en otras se pagan tipos progresivos más altos."
+  },
+  {
+    "id": "PREG-003",
+    "materia": "Impuestos",
+    "subtema": "Grandes Fortunas y Patrimonio",
+    "enunciado": "Debe mantenerse de forma permanente el Impuesto de Solidaridad sobre las Grandes Fortunas y el gravamen a los patrimonios netos superiores a 3 millones de euros.",
+    "psoePos": "A favor", "psoeRef": "PSOE-0061 (Pág. 35)",
+    "voxPos": "En contra", "voxRef": "VOX-218 (Pág. 92)",
+    "ppPos": "En contra", "ppRef": "PP-182 (Pág. 63)",
+    "didactica": "El impuesto a las grandes fortunas es un tributo estatal directo que grava la riqueza patrimonial individual neta superior a 3 millones de euros para contribuir a la redistribución de la riqueza pública."
+  },
+  {
+    "id": "PREG-004",
+    "materia": "Impuestos",
+    "subtema": "IVA Alimentos y Productos Básicos",
+    "enunciado": "La carne, el pescado y las conservas básicas deben incluirse dentro de la rebaja o exención del IVA de alimentos básicos.",
+    "psoePos": "En contra", "psoeRef": "PSOE-0012 (Pág. 24)",
+    "voxPos": "A favor", "voxRef": "VOX-222 (Pág. 93)",
+    "ppPos": "A favor", "ppRef": "PP-185 (Pág. 64)",
+    "didactica": "Durante la crisis inflacionaria se redujo el IVA al 0% en pan, leche, huevos y frutas, pero la carne y el pescado mantuvieron el tipo reducido del 10%."
+  },
+  {
+    "id": "PREG-005",
+    "materia": "Impuestos",
+    "subtema": "Gravamen a Banca y Energéticas",
+    "enunciado": "Se deben mantener de forma definitiva los impuestos extraordinarios sobre los beneficios extraordinarios de los grandes bancos y las empresas del sector energético.",
+    "psoePos": "A favor", "psoeRef": "PSOE-0060 (Pág. 35)",
+    "voxPos": "En contra", "voxRef": "VOX-219 (Pág. 92)",
+    "ppPos": "En contra", "ppRef": "PP-181 (Pág. 63)",
+    "didactica": "Son figuras fiscales temporales creadas para gravar los márgenes extraordinarios generados por la subida de los tipos de interés y los altos precios internacionales de la energía."
+  },
+  {
+    "id": "PREG-006",
+    "materia": "Impuestos",
+    "subtema": "Tipo Único o Reducción Drástica IRPF",
+    "enunciado": "El IRPF debe simplificarse drásticamente hacia dos tipos únicos muy reducidos (por ejemplo, 15% para rentas medias y 25% para rentas altas), suprimiendo la progresividad de tramos múltiples actual.",
+    "psoePos": "En contra", "psoeRef": "PSOE-0057 (Pág. 34)",
+    "voxPos": "A favor", "voxRef": "VOX-215 (Pág. 90)",
+    "ppPos": "En contra", "ppRef": "PP-179 (Pág. 62)",
+    "didactica": "El sistema actual de IRPF tiene tramos progresivos que van desde el 19% hasta el 47%. Un sistema simplificado reduce los tipos para que casi toda la renta tribute al mismo tipo moderado."
+  },
+  {
+    "id": "PREG-007",
+    "materia": "Impuestos",
+    "subtema": "Armonización Fiscal Autonómica",
+    "enunciado": "El Gobierno central debe fijar un tipo mínimo obligatorio en toda España para impuestos como Sucesiones y Patrimonio, impidiendo que algunas Comunidades Autónomas los bonifiquen al 100%.",
+    "psoePos": "A favor", "psoeRef": "PSOE-0062 (Pág. 35)",
+    "voxPos": "En contra", "voxRef": "VOX-410 (Pág. 142)",
+    "ppPos": "En contra", "ppRef": "PP-183 (Pág. 63)",
+    "didactica": "La armonización fiscal busca que ningún territorio baje impuestos por debajo de un suelo estatal para evitar que contribuyentes con patrimonios altos trasladen su residencia fiscal entre regiones."
+  },
+  {
+    "id": "PREG-008",
+    "materia": "Impuestos",
+    "subtema": "IVA Productos Infantiles",
+    "enunciado": "El IVA de los pañales, productos de higiene infantil y alimentación para bebés debe situarse permanentemente en el tipo superreducido del 4% o en el 0%.",
+    "psoePos": "Matizada", "psoeRef": "PSOE-0013 (Pág. 24)",
+    "voxPos": "A favor", "voxRef": "VOX-223 (Pág. 93)",
+    "ppPos": "A favor", "ppRef": "PP-142 (Pág. 53)",
+    "didactica": "Actualmente muchos productos de higiene y cuidado de bebés tributan al tipo general del 21% o reducido del 10%."
+  },
+  {
+    "id": "PREG-009",
+    "materia": "Vivienda",
+    "subtema": "Control de Precios del Alquiler",
+    "enunciado": "Las administraciones públicas deben limitar por ley el precio de los alquileres en aquellas zonas residenciales donde los precios hayan subido de forma desproporcionada (zonas tensionadas).",
+    "psoePos": "A favor", "psoeRef": "PSOE-0720 (Pág. 182)",
+    "voxPos": "En contra", "voxRef": "VOX-276 (Pág. 108)",
+    "ppPos": "En contra", "ppRef": "PP-160 (Pág. 58)",
+    "didactica": "La declaración de zona tensionada faculta a limitar y topar las subidas de los contratos de alquiler para evitar que las familias destinen más del 30% de sus ingresos al pago de la renta."
+  },
+  {
+    "id": "PREG-010",
+    "materia": "Vivienda",
+    "subtema": "Desalojo Exprés de Okupas",
+    "enunciado": "La policía debe desalojar a los ocupas ilegales de una vivienda en un plazo máximo de 24 a 48 horas mediante procedimiento judicial rápido y sin necesidad de acreditar alternativa habitacional.",
+    "psoePos": "En contra", "psoeRef": "PSOE-0730 (Pág. 184)",
+    "voxPos": "A favor", "voxRef": "VOX-280 (Pág. 110)",
+    "ppPos": "A favor", "ppRef": "PP-157 (Pág. 57)",
+    "didactica": "Actualmente los procesos judiciales ordinarios de desahucio por usurpación u ocupación sin contrato pueden prolongarse durante meses o años si se alega vulnerabilidad social."
+  },
+  {
+    "id": "PREG-011",
+    "materia": "Vivienda",
+    "subtema": "Avales Públicos para Primera Vivienda",
+    "enunciado": "El Estado debe avalar hasta el 20% de la hipoteca a jóvenes menores de 35 años y familias con menores a cargo para que puedan comprar su primera vivienda sin tener ahorrada la entrada previa.",
+    "psoePos": "A favor", "psoeRef": "PSOE-0724 (Pág. 183)",
+    "voxPos": "A favor", "voxRef": "VOX-278 (Pág. 109)",
+    "ppPos": "A favor", "ppRef": "PP-155 (Pág. 57)",
+    "didactica": "Los bancos suelen financiar hasta el 80% del valor de tasación; el aval público asume la garantía del 20% restante que exige la entidad financiera como entrada inicial."
+  },
+  {
+    "id": "PREG-012",
+    "materia": "Vivienda",
+    "subtema": "Incentivos Fiscales al Propietario",
+    "enunciado": "Para aumentar la oferta de pisos en alquiler, se deben rebajar sustancialmente los impuestos a los propietarios que saquen sus viviendas al mercado y firmen contratos de larga duración con jóvenes.",
+    "psoePos": "Matizada", "psoeRef": "PSOE-0726 (Pág. 183)",
+    "voxPos": "A favor", "voxRef": "VOX-277 (Pág. 108)",
+    "ppPos": "A favor", "ppRef": "PP-161 (Pág. 58)",
+    "didactica": "Consiste en aplicar reducciones de hasta el 70% o 90% en el rendimiento neto del IRPF para los arrendadores que alquilen a precios asequibles o a jóvenes menores de 35 años."
+  },
+  {
+    "id": "PREG-013",
+    "materia": "Vivienda",
+    "subtema": "Empadronamiento de Ocupas",
+    "enunciado": "Debe prohibirse expresamente por ley que las personas que ocupan ilegalmente un inmueble puedan empadronarse en ese domicilio.",
+    "psoePos": "En contra", "psoeRef": "PSOE-0731 (Pág. 184)",
+    "voxPos": "A favor", "voxRef": "VOX-282 (Pág. 110)",
+    "ppPos": "A favor", "ppRef": "PP-158 (Pág. 57)",
+    "didactica": "La normativa actual de empadronamiento permite inscribirse en el padrón acreditando residencia efectiva para recibir asistencia médica y escolarización de menores, con independencia del título legal de la vivienda."
+  },
+  {
+    "id": "PREG-014",
+    "materia": "Vivienda",
+    "subtema": "Parque Público de Vivienda en Alquiler",
+    "enunciado": "Las viviendas de la SAREB (el 'banco malo') y el suelo público del Estado deben destinarse exclusivamente a construir un parque público permanente de alquiler social que nunca pueda venderse a fondos privados.",
+    "psoePos": "A favor", "psoeRef": "PSOE-0722 (Pág. 182)",
+    "voxPos": "En contra", "voxRef": "VOX-285 (Pág. 111)",
+    "ppPos": "Matizada", "ppRef": "PP-162 (Pág. 58)",
+    "didactica": "España cuenta con un parque de vivienda social en alquiler de apenas el 2,5% frente a la media europea superior al 9%."
+  },
+  {
+    "id": "PREG-015",
+    "materia": "Empleo",
+    "subtema": "Reducción de Jornada Laboral a 37,5 Horas",
+    "enunciado": "La jornada laboral máxima legal debe reducirse por ley de 40 a 37,5 horas semanales sin reducción de sueldo para los trabajadores.",
+    "psoePos": "A favor", "psoeRef": "PSOE-0026 (Pág. 26)",
+    "voxPos": "En contra", "voxRef": "VOX-232 (Pág. 95)",
+    "ppPos": "En contra", "ppRef": "PP-178 (Pág. 62)",
+    "didactica": "Propuesta de reducción legal obligatoria de 2,5 horas semanales en la jornada ordinaria de trabajo para todos los sectores sin rebajar el salario pactado."
+  },
+  {
+    "id": "PREG-016",
+    "materia": "Empleo",
+    "subtema": "Salario Mínimo Interprofesional (SMI)",
+    "enunciado": "El Salario Mínimo Interprofesional debe fijarse obligatoriamente por ley para que equivalga siempre al menos al 60% del salario medio de España.",
+    "psoePos": "A favor", "psoeRef": "PSOE-0020 (Pág. 25)",
+    "voxPos": "En contra", "voxRef": "VOX-230 (Pág. 95)",
+    "ppPos": "Matizada", "ppRef": "PP-176 (Pág. 62)",
+    "didactica": "Fórmula de garantía salarial derivada de la Carta Social Europea para evitar la pérdida de poder adquisitivo de los salarios más bajos."
+  },
+  {
+    "id": "PREG-017",
+    "materia": "Autónomos y empresas",
+    "subtema": "Tarifa / Cuota Cero para Nuevos Autónomos",
+    "enunciado": "Los nuevos autónomos deben tener una Tarifa Cero de cuota a la Seguridad Social durante su primer año de actividad, prorrogable a un segundo año si sus ingresos no superan el salario mínimo.",
+    "psoePos": "Matizada", "psoeRef": "PSOE-0036 (Pág. 28)",
+    "voxPos": "A favor", "voxRef": "VOX-235 (Pág. 97)",
+    "ppPos": "A favor", "ppRef": "PP-177 (Pág. 62)",
+    "didactica": "Bonificación del 100% en la cuota mensual de autónomos para incentivar el emprendimiento durante los primeros 12 a 24 meses de actividad profesional."
+  },
+  {
+    "id": "PREG-018",
+    "materia": "Autónomos y empresas",
+    "subtema": "Cuota Cero para Ingresos Bajos Indefinida",
+    "enunciado": "Cualquier trabajador autónomo cuyos ingresos netos reales no alcancen el Salario Mínimo no debería pagar ninguna cuota a la Seguridad Social, con independencia de los años que lleve de actividad.",
+    "psoePos": "En contra", "psoeRef": "PSOE-0038 (Pág. 29)",
+    "voxPos": "A favor", "voxRef": "VOX-236 (Pág. 97)",
+    "ppPos": "En contra", "ppRef": "PP-177 (Pág. 62)",
+    "didactica": "Exención indefinida del pago mensual de cuotas a aquellos autónomos en situación de bajos rendimientos para no asfixiar pequeños negocios informales o discontinuos."
+  },
+  {
+    "id": "PREG-019",
+    "materia": "Empleo",
+    "subtema": "Coste de Despido y Flexibilidad",
+    "enunciado": "Se debe encarecer la indemnización por despido improcedente y exigir una causa justificada reforzada antes de que una empresa pueda extinguir un contrato indefinido.",
+    "psoePos": "A favor", "psoeRef": "PSOE-0024 (Pág. 25)",
+    "voxPos": "En contra", "voxRef": "VOX-234 (Pág. 96)",
+    "ppPos": "En contra", "ppRef": "PP-176 (Pág. 62)",
+    "didactica": "La indemnización por despido improcedente en España es de 33 días por año trabajado con tope de 24 mensualidades. Se debate encarecerla mediante indemnizaciones disuasorias variables."
+  },
+  {
+    "id": "PREG-020",
+    "materia": "Sanidad",
+    "subtema": "Tiempos Máximos de Espera en Sanidad",
+    "enunciado": "Se debe aprobar una ley estatal que obligue a que ninguna operación quirúrgica tarde más de 120 días y ninguna prueba diagnóstica tarde más de 30 días en la sanidad pública.",
+    "psoePos": "A favor", "psoeRef": "PSOE-0780 (Pág. 195)",
+    "voxPos": "Matizada", "voxRef": "VOX-050 (Pág. 40)",
+    "ppPos": "A favor", "ppRef": "PP-118 (Pág. 47)",
+    "didactica": "Regulación con rango de ley básica nacional que establece plazos máximos perentorios para la atención sanitaria programada en todos los servicios de salud autonómicos."
+  },
+  {
+    "id": "PREG-021",
+    "materia": "Sanidad",
+    "subtema": "Tarjeta Sanitaria Única e Historial Compartido",
+    "enunciado": "Debe existir una única tarjeta sanitaria nacional y un historial clínico digital interoperable que permita ser atendido en cualquier hospital de España en idénticas condiciones y con acceso inmediato a los informes médicos.",
+    "psoePos": "A favor", "psoeRef": "PSOE-0782 (Pág. 195)",
+    "voxPos": "A favor", "voxRef": "VOX-052 (Pág. 41)",
+    "ppPos": "A favor", "ppRef": "PP-119 (Pág. 47)",
+    "didactica": "Plena interoperabilidad informática entre los 17 servicios de salud autonómicos para que recetas médicas, pruebas diagnósticas y citas sean válidas en cualquier comunidad."
+  },
+  {
+    "id": "PREG-022",
+    "materia": "Sanidad",
+    "subtema": "Colaboración Público-Privada en Hospitales",
+    "enunciado": "Para descongestionar las listas de espera, la sanidad pública debe derivar con mayor agilidad a los pacientes a clínicas y hospitales privados concertados financiados con dinero público.",
+    "psoePos": "En contra", "psoeRef": "PSOE-0784 (Pág. 196)",
+    "voxPos": "A favor", "voxRef": "VOX-055 (Pág. 42)",
+    "ppPos": "A favor", "ppRef": "PP-121 (Pág. 48)",
+    "didactica": "La concertación sanitaria permite al sistema público contratar capacidad asistencial privada para operar o realizar pruebas a pacientes de la sanidad pública a cargo del presupuesto autonómico."
+  },
+  {
+    "id": "PREG-023",
+    "materia": "Sanidad",
+    "subtema": "Salud Bucodental y Oftalmológica Pública",
+    "enunciado": "La cartera de servicios de la sanidad pública debe incorporar progresivamente la cobertura gratuita de tratamientos dentales completos y gafas/lentillas para menores y colectivos con rentas bajas.",
+    "psoePos": "A favor", "psoeRef": "PSOE-0786 (Pág. 196)",
+    "voxPos": "Matizada", "voxRef": "VOX-058 (Pág. 43)",
+    "ppPos": "Matizada", "ppRef": "PP-123 (Pág. 48)",
+    "didactica": "Ampliación de los servicios comunes del Sistema Nacional de Salud hacia áreas tradicionalmente costeadas de forma privada de bolsillo por las familias."
+  },
+  {
+    "id": "PREG-024",
+    "materia": "Educación",
+    "subtema": "Conciertos Educativos y Libre Elección",
+    "enunciado": "Las familias deben tener total libertad para elegir colegio público o concertado, y la administración debe financiar las plazas concertadas en igualdad de condiciones si existe demanda de los padres.",
+    "psoePos": "En contra", "psoeRef": "PSOE-0380 (Pág. 102)",
+    "voxPos": "A favor", "voxRef": "VOX-100 (Pág. 55)",
+    "ppPos": "A favor", "ppRef": "PP-128 (Pág. 49)",
+    "didactica": "La educación concertada está gestionada privadamente pero subvencionada con fondos públicos para ofrecer enseñanza obligatoria gratuita."
+  },
+  {
+    "id": "PREG-025",
+    "materia": "Educación",
+    "subtema": "Cheque Escolar Universal",
+    "enunciado": "El dinero destinado a educación pública debe entregarse directamente a las familias mediante un cheque escolar para que elijan libremente matricular a sus hijos en cualquier centro público, concertado o privado.",
+    "psoePos": "En contra", "psoeRef": "PSOE-0382 (Pág. 103)",
+    "voxPos": "A favor", "voxRef": "VOX-102 (Pág. 56)",
+    "ppPos": "En contra", "ppRef": "PP-128 (Pág. 49)",
+    "didactica": "Sistema de financiación educativa por demanda donde el Estado asigna un bono económico a cada alumno y la escuela recibe ingresos según el número de familias que la elijan."
+  },
+  {
+    "id": "PREG-026",
+    "materia": "Educación",
+    "subtema": "Autorización Paterna en Contenidos Morales (PIN Parental)",
+    "enunciado": "Los padres deben poder autorizar o denegar de forma previa la asistencia de sus hijos a charlas o talleres con contenidos ideológicos, morales o afectivo-sexuales en los colegios.",
+    "psoePos": "En contra", "psoeRef": "PSOE-0395 (Pág. 105)",
+    "voxPos": "A favor", "voxRef": "VOX-108 (Pág. 58)",
+    "ppPos": "Matizada", "ppRef": "PP-130 (Pág. 50)",
+    "didactica": "El PIN parental es un mecanismo de consentimiento expreso para que los progenitores decidan si sus hijos asisten a actividades complementarias impartidas en horario lectivo por personas ajenas al claustro docente."
+  },
+  {
+    "id": "PREG-027",
+    "materia": "Educación",
+    "subtema": "Prueba Única de Selectividad (EBAU en toda España)",
+    "enunciado": "Debe implantarse un examen único y común de acceso a la universidad (EBAU/Selectividad) con los mismos contenidos, fechas y criterios de corrección en todas las Comunidades Autónomas.",
+    "psoePos": "En contra", "psoeRef": "PSOE-0420 (Pág. 111)",
+    "voxPos": "A favor", "voxRef": "VOX-115 (Pág. 62)",
+    "ppPos": "A favor", "ppRef": "PP-132 (Pág. 50)",
+    "didactica": "Al haber un distrito universitario único nacional donde las notas compiten por las mismas plazas en toda España, se debate si el examen debe ser homogéneo en todas las regiones."
+  },
+  {
+    "id": "PREG-028",
+    "materia": "Educación",
+    "subtema": "Educación Infantil Gratuita 0-3 Años",
+    "enunciado": "La educación infantil de 0 a 3 años debe ser completamente gratuita y universal en toda España, cofinanciada por el Estado y las Comunidades Autónomas.",
+    "psoePos": "A favor", "psoeRef": "PSOE-0385 (Pág. 103)",
+    "voxPos": "A favor", "voxRef": "VOX-010 (Pág. 18)",
+    "ppPos": "A favor", "ppRef": "PP-138 (Pág. 52)",
+    "didactica": "Medida orientada a facilitar la conciliación de la vida laboral y familiar y fomentar la equidad educativa desde la primera infancia."
+  },
+  {
+    "id": "PREG-029",
+    "materia": "Energía",
+    "subtema": "Centrales Nucleares",
+    "enunciado": "España debe paralizar el cierre previsto de las centrales nucleares y prolongar su vida útil para contar con energía continua, no contaminante en emisiones y más barata.",
+    "psoePos": "En contra", "psoeRef": "PSOE-0230 (Pág. 71)",
+    "voxPos": "A favor", "voxRef": "VOX-365 (Pág. 132)",
+    "ppPos": "A favor", "ppRef": "PP-231 (Pág. 72)",
+    "didactica": "El Plan Nacional Integrado de Energía y Clima contempla el desmantelamiento gradual de los 7 reactores nucleares operativos en España entre los años 2027 y 2035."
+  },
+  {
+    "id": "PREG-030",
+    "materia": "Cambio climático",
+    "subtema": "Zonas de Bajas Emisiones (ZBE)",
+    "enunciado": "Se deben eliminar las Zonas de Bajas Emisiones que impiden la circulación de vehículos diésel o gasolina por el centro de las ciudades a los ciudadanos que no pueden permitirse un coche eléctrico.",
+    "psoePos": "En contra", "psoeRef": "PSOE-0235 (Pág. 72)",
+    "voxPos": "A favor", "voxRef": "VOX-370 (Pág. 134)",
+    "ppPos": "Matizada", "ppRef": "PP-230 (Pág. 72)",
+    "didactica": "La Ley de Cambio Climático obliga a los municipios de más de 50.000 habitantes a delimitar áreas urbanas con restricciones de acceso a los vehículos más contaminantes."
+  },
+  {
+    "id": "PREG-031",
+    "materia": "Energía",
+    "subtema": "Regulación de Macroparques Renovables",
+    "enunciado": "Debe frenarse la instalación masiva de macroparques eólicos y fotovoltaicos en comarcas agrícolas, zonas de alto valor paisajístico o bosques, exigiendo el visto bueno vinculante de los municipios afectados.",
+    "psoePos": "En contra", "psoeRef": "PSOE-0225 (Pág. 70)",
+    "voxPos": "A favor", "voxRef": "VOX-375 (Pág. 135)",
+    "ppPos": "A favor", "ppRef": "PP-232 (Pág. 73)",
+    "didactica": "Existe controversia en el medio rural por la ocupación de tierras cultivables y parajes naturales por miles de placas solares o aerogeneradores industriales."
+  },
+  {
+    "id": "PREG-032",
+    "materia": "Cambio climático",
+    "subtema": "Agenda 2030 y Compromisos Climáticos",
+    "enunciado": "España debe renunciar a los compromisos de la Agenda 2030 y al Pacto Verde Europeo para no imponer cargas asfixiantes a la industria, el transporte y la agricultura nacional.",
+    "psoePos": "En contra", "psoeRef": "PSOE-0220 (Pág. 69)",
+    "voxPos": "A favor", "voxRef": "VOX-361 (Pág. 130)",
+    "ppPos": "En contra", "ppRef": "PP-229 (Pág. 71)",
+    "didactica": "La Agenda 2030 de la ONU fija 17 objetivos de desarrollo sostenible (descarbonización, reducción de emisiones, protección de ecosistemas, igualdad de género y fin de la pobreza)."
+  },
+  {
+    "id": "PREG-033",
+    "materia": "Ganadería",
+    "subtema": "Control del Lobo Ibérico y Ganadería Extensiva",
+    "enunciado": "Se debe permitir la caza o control de población del lobo al norte del Duero para frenar los ataques al ganado y proteger a los ganaderos.",
+    "psoePos": "En contra", "psoeRef": "PSOE-0285 (Pág. 87)",
+    "voxPos": "A favor", "voxRef": "VOX-175 (Pág. 80)",
+    "ppPos": "A favor", "ppRef": "PP-207 (Pág. 66)",
+    "didactica": "En 2021 el Gobierno incluyó al lobo en el LESPRE, prohibiendo totalmente su caza cinegética en toda España, lo que motivó recursos de comunidades ganaderas."
+  },
+  {
+    "id": "PREG-034",
+    "materia": "Agricultura",
+    "subtema": "Cláusulas Espejo para Alimentos Importados",
+    "enunciado": "No se debe permitir la entrada en España de ningún producto agrario o ganadero procedente de fuera de la UE si no cumple exactamente las mismas normas laborales, medioambientales y sanitarias que se exigen a nuestros agricultores.",
+    "psoePos": "A favor", "psoeRef": "PSOE-0195 (Pág. 62)",
+    "voxPos": "A favor", "voxRef": "VOX-160 (Pág. 73)",
+    "ppPos": "A favor", "ppRef": "PP-202 (Pág. 65)",
+    "didactica": "Las 'cláusulas espejo' exigen reciprocidad en los acuerdos comerciales internacionales para frenar la competencia desleal de terceros países con menores costes."
+  },
+  {
+    "id": "PREG-035",
+    "materia": "Medioambiente",
+    "subtema": "Plan Hidrológico Nacional y Trasvases",
+    "enunciado": "Debe aprobarse un Plan Hidrológico Nacional que asegure la inversión en presas, balsas y trasvases entre cuencas para llevar agua desde donde sobra a las regiones con sequía estructural.",
+    "psoePos": "Matizada", "psoeRef": "PSOE-0290 (Pág. 88)",
+    "voxPos": "A favor", "voxRef": "VOX-180 (Pág. 82)",
+    "ppPos": "A favor", "ppRef": "PP-208 (Pág. 66)",
+    "didactica": "Contraste entre priorizar trasvases e infraestructuras de almacenamiento frente a la desalación, reutilización y caudales ecológicos mínimos en los ríos."
+  },
+  {
+    "id": "PREG-036",
+    "materia": "Inmigración",
+    "subtema": "Expulsión de Inmigrantes en Situación Irregular",
+    "enunciado": "Cualquier persona extranjera que entre ilegalmente en España o que cometa delitos comunes reiterados debe ser expulsada de forma inmediata a su país de origen.",
+    "psoePos": "En contra", "psoeRef": "PSOE-0955 (Pág. 235)",
+    "voxPos": "A favor", "voxRef": "VOX-311 (Pág. 120)",
+    "ppPos": "Matizada", "ppRef": "PP-014 (Pág. 16)",
+    "didactica": "El régimen jurídico de extranjería actual contempla expedientes de expulsión por entrada irregular sujetos a recursos judiciales, asilo y tratados de readmisión con terceros países."
+  },
+  {
+    "id": "PREG-037",
+    "materia": "Inmigración",
+    "subtema": "Reparto Autonómico de Menores No Acompañados",
+    "enunciado": "El Gobierno central no debe obligar por ley a las Comunidades Autónomas a acoger contingentes obligatorios de menores extranjeros no acompañados sin la autorización expresa de cada gobierno autonómico.",
+    "psoePos": "En contra", "psoeRef": "PSOE-0960 (Pág. 236)",
+    "voxPos": "A favor", "voxRef": "VOX-325 (Pág. 126)",
+    "ppPos": "A favor", "ppRef": "PP-016 (Pág. 16)",
+    "didactica": "Debate sobre la reforma del artículo 35 de la Ley de Extranjería para distribuir de forma vinculante a los menores migrantes que colapsan los centros de acogida de Canarias o Ceuta."
+  },
+  {
+    "id": "PREG-038",
+    "materia": "Inmigración",
+    "subtema": "Acceso a Ayudas Sociales según Residencia Legal",
+    "enunciado": "El acceso a ayudas sociales no contributivas, vivienda protegida y subsidios debe reservarse con carácter prioritario a los ciudadanos españoles y residentes legales.",
+    "psoePos": "En contra", "psoeRef": "PSOE-0785 (Pág. 195)",
+    "voxPos": "A favor", "voxRef": "VOX-315 (Pág. 122)",
+    "ppPos": "Matizada", "ppRef": "PP-015 (Pág. 16)",
+    "didactica": "Principio de prioridad nacional en el acceso a recursos asistenciales y ayudas públicas frente al modelo de universalidad basado en el empadronamiento y la necesidad económica."
+  },
+  {
+    "id": "PREG-039",
+    "materia": "Seguridad",
+    "subtema": "Prisión Permanente Revisable",
+    "enunciado": "Debe ampliarse el catálogo de delitos castigados con la pena de Prisión Permanente Revisable para incluir los homicidios con ocultación de cadáver y las violaciones con secuestro.",
+    "psoePos": "En contra", "psoeRef": "PSOE-0915 (Pág. 225)",
+    "voxPos": "A favor", "voxRef": "VOX-340 (Pág. 128)",
+    "ppPos": "A favor", "ppRef": "PP-040 (Pág. 22)",
+    "didactica": "Es la pena máxima del Código Penal español, que implica cumplimiento íntegro inicial de entre 25 y 35 años antes de someter al recluso a revisiones de reinserción."
+  },
+  {
+    "id": "PREG-040",
+    "materia": "Justicia",
+    "subtema": "Elección de los Vocales del CGPJ",
+    "enunciado": "Los 12 vocales judiciales del Consejo General del Poder Judicial deben ser elegidos directamente por los propios jueces y magistrados mediante votación interna, eliminando la intervención de los partidos políticos en el Congreso.",
+    "psoePos": "En contra", "psoeRef": "PSOE-0895 (Pág. 222)",
+    "voxPos": "A favor", "voxRef": "VOX-496 (Pág. 160)",
+    "ppPos": "A favor", "ppRef": "PP-036 (Pág. 21)",
+    "didactica": "El artículo 122 de la Constitución establece que los vocales sean nombrados con arreglo a la ley orgánica. Actualmente los 20 miembros son votados en el Parlamento por mayoría de 3/5."
+  },
+  {
+    "id": "PREG-041",
+    "materia": "Corrupción",
+    "subtema": "Delito de Malversación e Indultos",
+    "enunciado": "Se deben restablecer las penas íntegras de cárcel para el delito de malversación de fondos públicos (incluso cuando no haya lucro personal) y prohibir por ley los indultos a condenados por corrupción.",
+    "psoePos": "En contra", "psoeRef": "PSOE-0910 (Pág. 224)",
+    "voxPos": "A favor", "voxRef": "VOX-498 (Pág. 161)",
+    "ppPos": "A favor", "ppRef": "PP-082 (Pág. 34)",
+    "didactica": "La reforma penal de 2022 diferenció la malversación con desvío a uso propio de la malversación para un fin público no previsto, rebajando las penas de esta última."
+  },
+  {
+    "id": "PREG-042",
+    "materia": "Justicia",
+    "subtema": "Aforamientos de Políticos",
+    "enunciado": "Deben suprimirse todos los aforamientos de diputados, senadores y miembros del Gobierno para que sean juzgados por los tribunales ordinarios como cualquier otro ciudadano.",
+    "psoePos": "A favor", "psoeRef": "PSOE-0902 (Pág. 223)",
+    "voxPos": "A favor", "voxRef": "VOX-500 (Pág. 162)",
+    "ppPos": "A favor", "ppRef": "PP-075 (Pág. 31)",
+    "didactica": "El aforamiento establece que las causas penales contra cargos electos sean instruidas y juzgadas directamente por el Tribunal Supremo o los Tribunales Superiores de Justicia."
+  },
+  {
+    "id": "PREG-043",
+    "materia": "Organización territorial",
+    "subtema": "Garantía del Castellano en la Escuela",
+    "enunciado": "Debe garantizarse por ley en toda España que el castellano sea lengua vehicular con un mínimo del 25% del horario lectivo en las Comunidades Autónomas con lengua cooficial.",
+    "psoePos": "En contra", "psoeRef": "PSOE-0388 (Pág. 104)",
+    "voxPos": "Matizada", "voxRef": "VOX-112 (Pág. 60)",
+    "ppPos": "A favor", "ppRef": "PP-129 (Pág. 49)",
+    "didactica": "Fórmula de equilibrio respaldada por sentencias del Tribunal Supremo para asegurar que los alumnos de Cataluña, Baleares, Valencia o Galicia reciban al menos un cuarto de sus materias en la lengua común nacional."
+  },
+  {
+    "id": "PREG-044",
+    "materia": "Organización territorial",
+    "subtema": "Recentralización de Competencias al Estado",
+    "enunciado": "Las competencias esenciales en Sanidad, Educación y Seguridad deberían devolverse al Estado central para garantizar un único sistema común idéntico para todos los españoles.",
+    "psoePos": "En contra", "psoeRef": "PSOE-0930 (Pág. 230)",
+    "voxPos": "A favor", "voxRef": "VOX-401 (Pág. 140)",
+    "ppPos": "En contra", "ppRef": "PP-002 (Pág. 13)",
+    "didactica": "Plantea revertir el proceso de transferencias a las 17 Comunidades Autónomas iniciado con la Constitución de 1978 para unificar la gestión pública."
+  },
+  {
+    "id": "PREG-045",
+    "materia": "Organización territorial",
+    "subtema": "Financiación Singular y Conciertos Económicos",
+    "enunciado": "No debe concederse ninguna financiación singular ni cesión del 100% de la recaudación tributaria a Cataluña ni a ninguna otra comunidad al margen del régimen común de financiación autonómica.",
+    "psoePos": "En contra", "psoeRef": "PSOE-0065 (Pág. 36)",
+    "voxPos": "A favor", "voxRef": "VOX-408 (Pág. 141)",
+    "ppPos": "A favor", "ppRef": "PP-018 (Pág. 17)",
+    "didactica": "Debate sobre si la recaudación de todos los impuestos en un territorio debe salir de la caja común del Estado mediante un concierto fiscal propio o negociarse multilateralmente entre todas las CCAA."
+  },
+  {
+    "id": "PREG-046",
+    "materia": "Gasto público",
+    "subtema": "Subvenciones a Sindicatos y Patronales",
+    "enunciado": "Deben suprimirse por completo las subvenciones públicas directas a sindicatos, partidos políticos y patronales empresariales, obligándolos a financiarse exclusivamente con las cuotas de sus afiliados.",
+    "psoePos": "En contra", "psoeRef": "PSOE-0032 (Pág. 27)",
+    "voxPos": "A favor", "voxRef": "VOX-505 (Pág. 170)",
+    "ppPos": "En contra", "ppRef": "PP-003 (Pág. 13)",
+    "didactica": "Actualmente las organizaciones sindicales y empresariales representativas reciben partidas públicas consignadas en los presupuestos generales para sostener la concertación social y actividades formativas."
+  },
+  {
+    "id": "PREG-047",
+    "materia": "Gasto público",
+    "subtema": "Reducción de Ministerios y Asesores",
+    "enunciado": "El Gobierno de España debe reducir sustancialmente su estructura, limitando el número de ministerios a un máximo de 15 y recortando drásticamente el gasto en asesores y altos cargos nombrados a dedo.",
+    "psoePos": "En contra", "psoeRef": "PSOE-0010 (Pág. 22)",
+    "voxPos": "A favor", "voxRef": "VOX-405 (Pág. 142)",
+    "ppPos": "A favor", "ppRef": "PP-003 (Pág. 13)",
+    "didactica": "España ha contado en recientes legislaturas con 22 ministerios y un volumen récord de personal eventual y asesor de confianza política."
+  },
+  {
+    "id": "PREG-048",
+    "materia": "Igualdad",
+    "subtema": "Ley de Violencia de Género y Tribunales Específicos",
+    "enunciado": "Debe mantenerse la legislación específica de protección integral contra la violencia de género, reforzando los juzgados especializados y los recursos de acompañamiento a las mujeres víctimas.",
+    "psoePos": "A favor", "psoeRef": "PSOE-0590 (Pág. 148)",
+    "voxPos": "En contra", "voxRef": "VOX-363 (Pág. 131)",
+    "ppPos": "A favor", "ppRef": "PP-146 (Pág. 54)",
+    "didactica": "La Ley Orgánica de 2004 tipifica medidas de tutela y agravantes penales cuando la violencia la ejerce un hombre contra su pareja o expareja mujer."
+  },
+  {
+    "id": "PREG-049",
+    "materia": "Igualdad",
+    "subtema": "Sustitución por Ley de Violencia Intrafamiliar",
+    "enunciado": "La actual Ley de Violencia de Género debe ser sustituida por una Ley de Violencia Intrafamiliar que proteja por igual a todos los miembros de la familia (mujeres, hombres, niños y ancianos) sin asimetría penal por razón de sexo.",
+    "psoePos": "En contra", "psoeRef": "PSOE-0592 (Pág. 148)",
+    "voxPos": "A favor", "voxRef": "VOX-364 (Pág. 131)",
+    "ppPos": "En contra", "ppRef": "PP-147 (Pág. 54)",
+    "didactica": "Propuesta de supresión de la perspectiva de género en el Código Penal para castigar con idénticos baremos cualquier acto violento producido en el seno del hogar doméstico."
+  },
+  {
+    "id": "PREG-050",
+    "materia": "Derechos y libertades",
+    "subtema": "Ley de Memoria Democrática",
+    "enunciado": "Se debe derogar la Ley de Memoria Democrática para evitar la división ideológica de los españoles y la censura de la historia contemporánea.",
+    "psoePos": "En contra", "psoeRef": "PSOE-0920 (Pág. 226)",
+    "voxPos": "A favor", "voxRef": "VOX-480 (Pág. 154)",
+    "ppPos": "A favor", "ppRef": "PP-070 (Pág. 30)",
+    "didactica": "La Ley de Memoria Democrática declara ilegal el régimen franquista, promueve la exhumación de víctimas en fosas comunes y retira honores y títulos vinculados a la dictadura."
+  },
+  {
+    "id": "PREG-051",
+    "materia": "Cultura",
+    "subtema": "Tauromaquia",
+    "enunciado": "La tauromaquia debe ser protegida legalmente y promocionada como parte del patrimonio cultural inmaterial de España.",
+    "psoePos": "En contra", "psoeRef": "PSOE-0550 (Pág. 138)",
+    "voxPos": "A favor", "voxRef": "VOX-485 (Pág. 156)",
+    "ppPos": "A favor", "ppRef": "PP-049 (Pág. 25)",
+    "didactica": "Debate sobre el sostenimiento público, premios nacionales y emisión de espectáculos taurinos frente a la prohibición y defensa del bienestar animal."
+  },
+  {
+    "id": "PREG-052",
+    "materia": "Defensa",
+    "subtema": "Gasto en Defensa al 2% del PIB",
+    "enunciado": "España debe alcanzar de forma inmediata el compromiso de destinar el 2% del PIB a gasto militar y defensa nacional acordado con la OTAN.",
+    "psoePos": "A favor", "psoeRef": "PSOE-1180 (Pág. 268)",
+    "voxPos": "A favor", "voxRef": "VOX-345 (Pág. 129)",
+    "ppPos": "A favor", "ppRef": "PP-242 (Pág. 75)",
+    "didactica": "Compromiso de inversión en equipamiento y modernización de las Fuerzas Armadas exigido por los socios de la Alianza Atlántica."
+  },
+  {
+    "id": "PREG-053",
+    "materia": "Política exterior",
+    "subtema": "Gibraltar",
+    "enunciado": "España debe recuperar la reivindicación activa de su soberanía sobre Gibraltar y no aceptar acuerdos europeos pos-Brexit que no incluyan el principio de co-soberanía.",
+    "psoePos": "Matizada", "psoeRef": "PSOE-1150 (Pág. 260)",
+    "voxPos": "A favor", "voxRef": "VOX-350 (Pág. 130)",
+    "ppPos": "A favor", "ppRef": "PP-241 (Pág. 75)",
+    "didactica": "Negociaciones entre la UE, España y Reino Unido sobre el estatuto fronterizo y fiscal de la colonia británica tras la salida de Gran Bretaña de la UE."
+  },
+  {
+    "id": "PREG-054",
+    "materia": "Dependencia",
+    "subtema": "Financiación de la Dependencia al 50%",
+    "enunciado": "El Estado debe asumir por ley la financiación real del 50% de las ayudas y prestaciones a la dependencia en todas las Comunidades Autónomas.",
+    "psoePos": "A favor", "psoeRef": "PSOE-0650 (Pág. 170)",
+    "voxPos": "A favor", "voxRef": "VOX-035 (Pág. 28)",
+    "ppPos": "A favor", "ppRef": "PP-150 (Pág. 56)",
+    "didactica": "La Ley de Dependencia contemplaba cofinanciación al 50% entre Estado y CCAA, pero en la práctica las comunidades asumen más del 70% del coste real."
+  },
+  {
+    "id": "PREG-055",
+    "materia": "Transporte",
+    "subtema": "Gratuidad de Trenes de Cercanías",
+    "enunciado": "Los trenes de Cercanías, Rodalies y media distancia deben mantenerse permanentemente gratuitos para los usuarios recurrentes financiado con fondos públicos.",
+    "psoePos": "A favor", "psoeRef": "PSOE-0250 (Pág. 76)",
+    "voxPos": "En contra", "voxRef": "VOX-450 (Pág. 148)",
+    "ppPos": "En contra", "ppRef": "PP-224 (Pág. 70)",
+    "didactica": "Medida de choque tarifario para incentivar el uso del transporte público colectivo frente al vehículo privado y reducir el gasto familiar en desplazamientos diarios."
+  },
+  {
+    "id": "PREG-056",
+    "materia": "Familia",
+    "subtema": "Permiso por Nacimiento de 20 Semanas",
+    "enunciado": "El permiso retribuido de paternidad y maternidad debe ampliarse por ley de las 16 semanas actuales a 20 semanas para cada progenitor.",
+    "psoePos": "A favor", "psoeRef": "PSOE-0610 (Pág. 156)",
+    "voxPos": "Matizada", "voxRef": "VOX-015 (Pág. 22)",
+    "ppPos": "A favor", "ppRef": "PP-140 (Pág. 53)",
+    "didactica": "Permiso laboral remunerado al 100% que asume la Seguridad Social para cuidar al recién nacido en sus primeros meses de vida."
+  },
+  {
+    "id": "PREG-057",
+    "materia": "Igualdad",
+    "subtema": "Abolición de la Prostitución",
+    "enunciado": "Se debe penalizar penalmente el proxenetismo en todas sus formas y sancionar a los clientes que paguen por servicios sexuales para avanzar en la abolición de la prostitución.",
+    "psoePos": "A favor", "psoeRef": "PSOE-0580 (Pág. 152)",
+    "voxPos": "Matizada", "voxRef": "VOX-355 (Pág. 130)",
+    "ppPos": "Matizada", "ppRef": "PP-148 (Pág. 55)",
+    "didactica": "Modelo abolicionista que castiga judicialmente a quien se lucra con la explotación sexual o compra sexo, ofreciendo inserción social a las mujeres prostituidas."
+  },
+  {
+    "id": "PREG-058",
+    "materia": "Investigación",
+    "subtema": "Gasto en I+D al 3% del PIB",
+    "enunciado": "La inversión estatal en Ciencia, Investigación e Innovación (I+D+i) debe blindarse por ley para alcanzar de forma vinculante el 3% del PIB en 2030.",
+    "psoePos": "A favor", "psoeRef": "PSOE-0480 (Pág. 115)",
+    "voxPos": "Matizada", "voxRef": "VOX-260 (Pág. 102)",
+    "ppPos": "A favor", "ppRef": "PP-136 (Pág. 51)",
+    "didactica": "Incremento presupuestario público y estímulos fiscales privados para la retención del talento científico y la transferencia tecnológica a empresas."
+  },
+  {
+    "id": "PREG-059",
+    "materia": "Transparencia",
+    "subtema": "Autoridad Independiente de Transparencia con Capacidad Sancionadora",
+    "enunciado": "El Consejo de Transparencia debe transformarse en una Autoridad Independiente con potestad real para sancionar a los altos cargos que no faciliten información pública en plazo.",
+    "psoePos": "A favor", "psoeRef": "PSOE-0905 (Pág. 223)",
+    "voxPos": "A favor", "voxRef": "VOX-497 (Pág. 161)",
+    "ppPos": "A favor", "ppRef": "PP-085 (Pág. 34)",
+    "didactica": "Actualmente el Consejo de Transparencia emite resoluciones de acceso a la información que si son incumplidas por los ministerios requieren acudir a los tribunales."
+  },
+  {
+    "id": "PREG-060",
+    "materia": "Administración pública",
+    "subtema": "Supresión de la Cita Previa Obligatoria",
+    "enunciado": "Debe eliminarse con carácter inmediato la obligatoriedad de la cita previa en las oficinas de la Administración General del Estado y la Seguridad Social para atender en ventanilla a cualquier ciudadano que acuda en persona.",
+    "psoePos": "Matizada", "psoeRef": "PSOE-0850 (Pág. 210)",
+    "voxPos": "A favor", "voxRef": "VOX-415 (Pág. 144)",
+    "ppPos": "A favor", "ppRef": "PP-009 (Pág. 15)",
+    "didactica": "La cita previa generalizada durante la pandemia se mantuvo como barrera burocrática, perjudicando especialmente a personas mayores y trámites urgentes."
+  }
+];
+
+    let state = {
+      currentIndex: 0,
+      answers: [],
+      status: 'WELCOME'
+    };
+
+    const welcomeScreen = document.getElementById('welcomeScreen');
+    const questionScreen = document.getElementById('questionScreen');
+    const resultsScreen = document.getElementById('resultsScreen');
+    const startBtn = document.getElementById('startBtn');
+    const qCategory = document.getElementById('qCategory');
+    const qCounter = document.getElementById('qCounter');
+    const qProgress = document.getElementById('qProgress');
+    const qText = document.getElementById('qText');
+    const btnAgree = document.getElementById('btnAgree');
+    const btnDisagree = document.getElementById('btnDisagree');
+    const btnNeutral = document.getElementById('btnNeutral');
+    const didacticBox = document.getElementById('didacticBox');
+    const didacticText = document.getElementById('didacticText');
+    const prevBtn = document.getElementById('prevBtn');
+    const restartBtn = document.getElementById('restartBtn');
+    const themeBtn = document.getElementById('themeBtn');
+    const printBtn = document.getElementById('printBtn');
+    const exportBtn = document.getElementById('exportBtn');
+    const retakeBtn = document.getElementById('retakeBtn');
+    const downloadResultsBtn = document.getElementById('downloadResultsBtn');
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.body.getAttribute('data-theme') === 'dark';
+      document.body.setAttribute('data-theme', isDark ? 'light' : 'dark');
+      themeBtn.innerHTML = isDark ? '🌙 Modo Oscuro' : '☀️ Modo Claro';
+    });
+
+    printBtn.addEventListener('click', () => window.print());
+
+    startBtn.addEventListener('click', () => {
+      state.status = 'QUESTION';
+      welcomeScreen.style.display = 'none';
+      questionScreen.style.display = 'block';
+      renderQuestion();
+    });
+
+    function renderQuestion() {
+      const q = QUESTIONS[state.currentIndex];
+      qCategory.textContent = q.materia + (q.subtema ? ' • ' + q.subtema : '');
+      qCounter.textContent = `Pregunta ${state.currentIndex + 1} de ${QUESTIONS.length}`;
+      const pct = Math.round((state.currentIndex / QUESTIONS.length) * 100);
+      qProgress.style.width = pct + '%';
+      qText.textContent = q.enunciado;
+      didacticBox.classList.remove('open');
+      prevBtn.disabled = state.currentIndex === 0;
+    }
+
+    function answerQuestion(val) {
+      const q = QUESTIONS[state.currentIndex];
+
+      if (val === 'DESCONOZCO' && q.didactica && !didacticBox.classList.contains('open')) {
+        didacticText.textContent = q.didactica;
+        didacticBox.classList.add('open');
+        return;
+      }
+
+      state.answers[state.currentIndex] = { id: q.id, answer: val };
+      state.currentIndex++;
+      if (state.currentIndex >= QUESTIONS.length) {
+        showResults();
+      } else {
+        renderQuestion();
+      }
+    }
+
+    btnAgree.addEventListener('click', () => answerQuestion('DE ACUERDO'));
+    btnDisagree.addEventListener('click', () => answerQuestion('EN DESACUERDO'));
+    btnNeutral.addEventListener('click', () => answerQuestion('DESCONOZCO'));
+
+    window.addEventListener('keydown', (e) => {
+      if (questionScreen.style.display === 'block') {
+        if (e.key === '1') answerQuestion('DE ACUERDO');
+        if (e.key === '2') answerQuestion('EN DESACUERDO');
+        if (e.key === '3') answerQuestion('DESCONOZCO');
+      }
+    });
+
+    prevBtn.addEventListener('click', () => {
+      if (state.currentIndex > 0) {
+        state.currentIndex--;
+        renderQuestion();
+      }
+    });
+
+    restartBtn.addEventListener('click', () => {
+      if (confirm('¿Reiniciar el cuestionario?')) {
+        state.currentIndex = 0;
+        state.answers = [];
+        renderQuestion();
+      }
+    });
+
+    retakeBtn.addEventListener('click', () => {
+      state.currentIndex = 0;
+      state.answers = [];
+      resultsScreen.style.display = 'none';
+      questionScreen.style.display = 'block';
+      renderQuestion();
+    });
+
+    function showResults() {
+      state.status = 'RESULTS';
+      questionScreen.style.display = 'none';
+      resultsScreen.style.display = 'block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      let psoePoints = 0, psoeTotal = 0, psoeMatches = 0, psoeDiffs = 0;
+      let voxPoints = 0, voxTotal = 0, voxMatches = 0, voxDiffs = 0;
+      let ppPoints = 0, ppTotal = 0, ppMatches = 0, ppDiffs = 0;
+
+      const thematicData = {};
+
+      QUESTIONS.forEach((q, idx) => {
+        const userAns = state.answers[idx]?.answer;
+        if (!userAns || userAns === 'DESCONOZCO') return;
+
+        if (!thematicData[q.materia]) {
+          thematicData[q.materia] = { psoeP: 0, voxP: 0, ppP: 0, total: 0 };
+        }
+        thematicData[q.materia].total++;
+
+        // PSOE
+        if (q.psoePos !== 'Sin posición') {
+          psoeTotal++;
+          if ((userAns === 'DE ACUERDO' && q.psoePos === 'A favor') || (userAns === 'EN DESACUERDO' && q.psoePos === 'En contra')) {
+            psoePoints += 1; psoeMatches++; thematicData[q.materia].psoeP += 1;
+          } else if (q.psoePos === 'Matizada') {
+            psoePoints += 0.5; thematicData[q.materia].psoeP += 0.5;
+          } else {
+            psoeDiffs++;
+          }
+        }
+
+        // VOX
+        if (q.voxPos !== 'Sin posición') {
+          voxTotal++;
+          if ((userAns === 'DE ACUERDO' && q.voxPos === 'A favor') || (userAns === 'EN DESACUERDO' && q.voxPos === 'En contra')) {
+            voxPoints += 1; voxMatches++; thematicData[q.materia].voxP += 1;
+          } else if (q.voxPos === 'Matizada') {
+            voxPoints += 0.5; thematicData[q.materia].voxP += 0.5;
+          } else {
+            voxDiffs++;
+          }
+        }
+
+        // PP
+        if (q.ppPos !== 'Sin posición') {
+          ppTotal++;
+          if ((userAns === 'DE ACUERDO' && q.ppPos === 'A favor') || (userAns === 'EN DESACUERDO' && q.ppPos === 'En contra')) {
+            ppPoints += 1; ppMatches++; thematicData[q.materia].ppP += 1;
+          } else if (q.ppPos === 'Matizada') {
+            ppPoints += 0.5; thematicData[q.materia].ppP += 0.5;
+          } else {
+            ppDiffs++;
+          }
+        }
+      });
+
+      const psoeScore = psoeTotal > 0 ? Math.round((psoePoints / psoeTotal) * 100) : 0;
+      const voxScore = voxTotal > 0 ? Math.round((voxPoints / voxTotal) * 100) : 0;
+      const ppScore = ppTotal > 0 ? Math.round((ppPoints / ppTotal) * 100) : 0;
+
+      document.getElementById('psoeScore').textContent = psoeScore + '%';
+      document.getElementById('psoeMatches').textContent = psoeMatches;
+      document.getElementById('psoeDiffs').textContent = psoeDiffs;
+
+      document.getElementById('ppScore').textContent = ppScore + '%';
+      document.getElementById('ppMatches').textContent = ppMatches;
+      document.getElementById('ppDiffs').textContent = ppDiffs;
+
+      document.getElementById('voxScore').textContent = voxScore + '%';
+      document.getElementById('voxMatches').textContent = voxMatches;
+      document.getElementById('voxDiffs').textContent = voxDiffs;
+
+      const profile = document.getElementById('profileSummary');
+      let highest = 'PSOE';
+      let maxScore = psoeScore;
+      if (ppScore > maxScore) { highest = 'Partido Popular'; maxScore = ppScore; }
+      if (voxScore > maxScore) { highest = 'VOX'; maxScore = voxScore; }
+
+      profile.innerHTML = `
+        <p><strong>Alineación Principal:</strong> Sus respuestas muestran la mayor coincidencia programática con las propuestas del <strong>${highest} (${maxScore}%)</strong>.</p>
+        <p style="margin-top: 0.5rem; color: var(--text-muted); font-size: 0.85rem;">
+          Se observa un grado de definición elevado en materias como Fiscalidad, Vivienda y Servicios Públicos. Los contrastes más acusados se concentran en el modelo de gestión territorial y regulación de mercados.
+        </p>
+      `;
+
+      const barsContainer = document.getElementById('thematicBarsContainer');
+      barsContainer.innerHTML = '';
+      Object.entries(thematicData).slice(0, 7).forEach(([materia, d]) => {
+        if (d.total === 0) return;
+        const psoeP = Math.round((d.psoeP / d.total) * 100);
+        const ppP = Math.round((d.ppP / d.total) * 100);
+        const voxP = Math.round((d.voxP / d.total) * 100);
+
+        const row = document.createElement('div');
+        row.className = 'thematic-row';
+        row.innerHTML = `
+          <div class="thematic-header">
+            <span>${materia}</span>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">PSOE: ${psoeP}% | PP: ${ppP}% | VOX: ${voxP}%</span>
+          </div>
+          <div class="thematic-bars-container">
+            <div class="thematic-bar" style="width: ${psoeP}%; background: var(--psoe-color);" title="PSOE ${psoeP}%"></div>
+            <div class="thematic-bar" style="width: ${ppP}%; background: var(--pp-color);" title="PP ${ppP}%"></div>
+            <div class="thematic-bar" style="width: ${voxP}%; background: var(--vox-color);" title="VOX ${voxP}%"></div>
+          </div>
+        `;
+        barsContainer.appendChild(row);
+      });
+
+      renderTable('all');
+    }
+
+    function renderTable(filter) {
+      const tbody = document.getElementById('comparisonTableBody');
+      tbody.innerHTML = '';
+
+      QUESTIONS.forEach((q, idx) => {
+        const userAns = state.answers[idx]?.answer || 'DESCONOZCO';
+
+        if (filter === 'agree' && userAns !== 'DE ACUERDO') return;
+        if (filter === 'disagree' && userAns !== 'EN DESACUERDO') return;
+        if (filter === 'neutral' && userAns !== 'DESCONOZCO') return;
+
+        const tr = document.createElement('tr');
+
+        let pillClass = 'neutral';
+        if (userAns === 'DE ACUERDO') pillClass = 'agree';
+        if (userAns === 'EN DESACUERDO') pillClass = 'disagree';
+
+        tr.innerHTML = `
+          <td><strong>${q.subtema}</strong><br><span style="color: var(--text-muted);">${q.enunciado}</span></td>
+          <td><span class="vote-pill ${pillClass}">${userAns}</span></td>
+          <td>
+            <div class="party-pos-badge ${q.psoePos === 'A favor' ? 'favor' : (q.psoePos === 'En contra' ? 'contra' : 'matiz')}">${q.psoePos}</div>
+            <div style="font-size: 0.65rem; color: var(--text-muted);">${q.psoeRef}</div>
+          </td>
+          <td>
+            <div class="party-pos-badge ${q.ppPos === 'A favor' ? 'favor' : (q.ppPos === 'En contra' ? 'contra' : 'matiz')}">${q.ppPos}</div>
+            <div style="font-size: 0.65rem; color: var(--text-muted);">${q.ppRef}</div>
+          </td>
+          <td>
+            <div class="party-pos-badge ${q.voxPos === 'A favor' ? 'favor' : (q.voxPos === 'En contra' ? 'contra' : 'matiz')}">${q.voxPos}</div>
+            <div style="font-size: 0.65rem; color: var(--text-muted);">${q.voxRef}</div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+        renderTable(e.target.getAttribute('data-filter'));
+      });
+    });
+
+    function exportResults() {
+      const exportData = {
+        metadata: {
+          proyecto: "Comparador Electoral Inteligente",
+          fecha: new Date().toISOString(),
+          totalPreguntas: QUESTIONS.length
+        },
+        respuestas: state.answers.map((a, i) => ({
+          idPregunta: QUESTIONS[i].id,
+          materia: QUESTIONS[i].materia,
+          subtema: QUESTIONS[i].subtema,
+          respuesta: a?.answer || 'DESCONOZCO',
+          posicionPSOE: QUESTIONS[i].psoePos,
+          refPSOE: QUESTIONS[i].psoeRef,
+          posicionPP: QUESTIONS[i].ppPos,
+          refPP: QUESTIONS[i].ppRef,
+          posicionVOX: QUESTIONS[i].voxPos,
+          refVOX: QUESTIONS[i].voxRef
+        }))
+      };
+
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportData, null, 2));
+      const a = document.createElement('a');
+      a.href = dataStr;
+      a.download = "06_MIS_RESULTADOS_ELECTORALES.json";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    }
+
+    downloadResultsBtn.addEventListener('click', exportResults);
+    exportBtn.addEventListener('click', exportResults);
+  </script>
+</body>
+</html>
